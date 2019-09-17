@@ -15,6 +15,10 @@ const comicSchema = new Schema(
          type: String,
          required: true
         }, 
+        imageUrl: {
+            type: String,
+            required: true
+        },
         category:{
             name:{
                 type: String,

@@ -4,12 +4,37 @@ const path = require('path');
 const comicsRoutes= require('./routes/comics');
 const categoriesRoutes = require('./routes/category');
 const mongoose = require('mongoose');
+const multer = require('multer');
 
 const app = express();
 
- //app.use(bodyParser.urlencoded()); // x-www-form-urlencoded <form>
+const fileStorage  = multer.diskStorage({
+  destination: (res, file, cb) => {
+    cb(null,'images');
+  },
+  filename: (req, file, cb) => {
+    cb(null, new Date().toISOString() + '-' + file.originalname);
+  }
+});
+
+const fileFilter = (req, file, cb) => {
+  if (
+    file.minetype === 'image/png' ||
+    file.minetype === 'image/jpg' ||
+    file.minetype === 'image/jpeg'
+  ){
+    cb(null, true);
+  }else {
+    cb(null, false);
+  }
+
+};
+
+// app.use(bodyParser.urlencoded()); // x-www-form-urlencoded <form>
 app.use(bodyParser.json()); // application/json
+app.use(multer({storage:fileStorage, filefilter: fileFilter}).single('file'));
 app.use('/images',express.static(path.join(__dirname,'images')));
+
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -26,7 +51,7 @@ app.use('/comics-manager',comicsRoutes)
 
 mongoose
   .connect(
-    'mongodb+srv://username:password@cluster0-ytacm.mongodb.net/REST_API-comicsManager?retryWrites=true&w=majority',
+    'mongodb+srv://@cluster0-ytacm.mongodb.net/REST_API-comicsManager?retryWrites=true&w=majority',
   )
   .then(result => {
     app.listen(8080);

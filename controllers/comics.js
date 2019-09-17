@@ -1,6 +1,9 @@
 //const Category = require('../models/Category');
+
 const Comic = require('../models/comic');
 const Category = require('../models/category');
+const fs = require('fs');
+const path = require('path');
 
 exports.getComics = (req, res, next) => {
   Comic.find()
@@ -17,10 +20,20 @@ exports.getComics = (req, res, next) => {
   };
   
   exports.createComic = (req, res, next) => {
+
+    console.log('create comics');
+    console.log(req.body['title']);
+
+    const str = JSON.stringify(req.body);
+    console.log('OBJECT');
+    console.log(str);
     const title = req.body.title;
+    console.log('title');
+    console.log(req.body.title);
     const description = req.body.description;
-    const imageUrl = req.body.imageUrl;
-    const idCat = req.body.categoryId
+    //const imageUrl = req.body.imageUrl;
+    const idCat = req.body.categoryId;
+    const imageUrl = req.file.path;
     var categComics;
     console.log("CREATION COMICS");
     console.log(req.body);
@@ -48,6 +61,7 @@ exports.getComics = (req, res, next) => {
         });    
       })
       .catch(err => {
+        console.log('ERREUR CREATION COMICS');
         console.log(err);
       })
     })
