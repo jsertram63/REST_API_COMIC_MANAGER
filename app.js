@@ -2,7 +2,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const path = require('path');
 const comicsRoutes= require('./routes/comics');
+const authRoutes= require('./routes/auth');
 const categoriesRoutes = require('./routes/category');
+
 const mongoose = require('mongoose');
 const multer = require('multer');
 
@@ -47,11 +49,20 @@ app.use((req, res, next) => {
   });
   
 app.use('/comics-manager', categoriesRoutes);
-app.use('/comics-manager',comicsRoutes)
+app.use('/comics-manager',comicsRoutes);
+app.use('/comics-manager',authRoutes);
+
+app.use((error, req, res, next) => {
+  console.log(error);
+  const status = error.statusCode || 500;
+  const message = error.message;
+  const data = error.data;
+  res.status(status).json({ message: message, data: data });
+});
 
 mongoose
   .connect(
-    'mongodb+srv://@cluster0-ytacm.mongodb.net/REST_API-comicsManager?retryWrites=true&w=majority',
+    'mongodb+srv://lunack63:2Sd0TCqoOEhkjrb7@cluster0-ytacm.mongodb.net/REST_API-comicsManager?retryWrites=true&w=majority',
   )
   .then(result => {
     app.listen(8080);
